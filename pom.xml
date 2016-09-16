@@ -240,11 +240,10 @@
         <module>camel-cdi</module>
         <module>camel-cxf-jaxrs</module>
         <module>camel-cxf-jaxws</module>
-        <module>camel-mail</module>
         <module>camel-jms</module>
+        <module>camel-jms-tx</module>
         <module>camel-jpa</module>
-        <module>camel-transacted-jms</module>
-        <module>itests</module>
+        <module>camel-mail</module>
     </modules>
 
 </project>

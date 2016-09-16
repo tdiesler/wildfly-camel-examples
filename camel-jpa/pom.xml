@@ -31,91 +31,12 @@
 
     <name>Wildfly Camel :: Example :: Camel JPA</name>
 
-    <artifactId>example-camel-jpa</artifactId>
-    <packaging>war</packaging>
+    <artifactId>example-camel-jpa-parent</artifactId>
+    <packaging>pom</packaging>
+    
+    <modules>
+        <module>war</module>
+        <module>itests</module>
+    </modules>
 
-    <dependencies>
-
-        <!-- Provided -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-cdi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jpa</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jaxb</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.1-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_3.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.transaction</groupId>
-            <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-    </dependencies>
-
-    <!-- Build -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
-                <configuration>
-                    <skip>${deploy.skip}</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>wildfly-deploy</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>deploy-only</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>wildfly-undeploy</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>undeploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-    <!-- Profiles -->
-    <profiles>
-        <profile>
-            <id>deploy</id>
-            <properties>
-                <deploy.skip>false</deploy.skip>
-            </properties>
-        </profile>
-    </profiles>
 </project>

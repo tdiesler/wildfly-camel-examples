@@ -31,120 +31,12 @@
 
     <name>Wildfly Camel :: Example :: Camel Mail</name>
 
-    <artifactId>example-camel-mail</artifactId>
-    <packaging>war</packaging>
+    <artifactId>example-camel-mail-parent</artifactId>
+    <packaging>pom</packaging>
+    
+    <modules>
+        <module>war</module>
+        <module>itests</module>
+    </modules>
 
-    <dependencies>
-
-        <!-- Provided -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-cdi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-mail</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.icegreen</groupId>
-            <artifactId>greenmail-webapp</artifactId>
-            <version>${version.greenmail}</version>
-            <type>war</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_3.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-    </dependencies>
-
-    <!-- Build -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
-                <configuration>
-                    <skip>${deploy.skip}</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>deploy-greenmail</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>deploy-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>com.icegreen</groupId>
-                            <artifactId>greenmail-webapp</artifactId>
-                            <version>${version.greenmail}</version>
-                            <type>war</type>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>wildfly-deploy</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>deploy-only</goal>
-                        </goals>
-                        <configuration>
-                            <beforeDeployment>
-                                <scripts>
-                                    <script>${project.basedir}/src/main/resources/cli/configure-mail.cli</script>
-                                </scripts>
-                            </beforeDeployment>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>wildfly-undeploy</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>undeploy</goal>
-                        </goals>
-                        <configuration>
-                            <afterDeployment>
-                                <scripts>
-                                    <script>${project.basedir}/src/main/resources/cli/remove-mail.cli</script>
-                                </scripts>
-                            </afterDeployment>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>greenmail-undeploy</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>undeploy</goal>
-                        </goals>
-                        <configuration>
-                            <matchPattern>greenmail-webapp-${version.greenmail}.war</matchPattern>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-    <!-- Profiles -->
-    <profiles>
-        <profile>
-            <id>deploy</id>
-            <properties>
-                <deploy.skip>false</deploy.skip>
-            </properties>
-        </profile>
-    </profiles>
 </project>
