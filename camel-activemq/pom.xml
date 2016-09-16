@@ -34,7 +34,12 @@
     <artifactId>example-camel-activemq</artifactId>
     <packaging>war</packaging>
 
+    <!-- Properties -->
+    <properties>
+    </properties>
+    
     <dependencies>
+    
         <!-- Provided -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
@@ -61,44 +66,53 @@
             <artifactId>jboss-servlet-api_3.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>
+        
     </dependencies>
 
     <!-- Build -->
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
-                <configuration>
-                    <skip>${deploy.skip}</skip>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>wildfly-deploy</id>
-                        <phase>install</phase>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>deploy-only</goal>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <version>${version.wildfly}</version>
+                            <jbossHome>${jboss.home}</jbossHome>
+                            <serverConfig>${server.config}</serverConfig>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>deploy</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>deploy</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>wildfly-undeploy</id>
-                        <phase>clean</phase>
+                        <id>shutdown</id>
+                        <phase>post-integration-test</phase>
                         <goals>
-                            <goal>undeploy</goal>
+                            <goal>shutdown</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
-    <!-- Profiles -->
-    <profiles>
-        <profile>
-            <id>deploy</id>
-            <properties>
-                <deploy.skip>false</deploy.skip>
-            </properties>
-        </profile>
-    </profiles>
 </project>

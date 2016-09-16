@@ -59,15 +59,18 @@
         <version.wildfly.arquillian>1.0.2.Final</version.wildfly.arquillian>
         
         <!-- Plugin versions -->
-        <version-exec-maven-plugin>1.4.0</version-exec-maven-plugin>
         <version-maven-compiler-plugin>3.1</version-maven-compiler-plugin>
         <version-maven-dependency-plugin>2.10</version-maven-dependency-plugin>
+        <version-maven-failsafe-plugin>2.19.1</version-maven-failsafe-plugin>
         <version-maven-release-plugin>2.5</version-maven-release-plugin>
         <version-maven-surefire-plugin>2.18.1</version-maven-surefire-plugin>
         <version-maven-war-plugin>2.5</version-maven-war-plugin>
-        <version-wildfly-maven-plugin>1.1.0.Alpha10</version-wildfly-maven-plugin>
-        
-        <deploy.skip>true</deploy.skip>
+        <version-wildfly-maven-plugin>1.1.0.Alpha11</version-wildfly-maven-plugin>
+
+        <!-- Integration Test Properties -->        
+        <jboss.home>${project.build.directory}/wildfly-${version.wildfly}</jboss.home>
+        <jvmArgs>-Xmx1G -Djava.net.preferIPv4Stack=true</jvmArgs>
+        <server.config>standalone-full-camel.xml</server.config>
     </properties>
 
     <!-- Dependency Management -->
@@ -148,6 +151,26 @@
         </dependencies>
     </dependencyManagement>
 
+    <!-- Dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>org.wildfly.camel</groupId>
+            <artifactId>wildfly-camel-subsystem-core</artifactId>
+            <version>${version.wildfly.camel}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.camel</groupId>
+            <artifactId>wildfly-camel-itests-common</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
     <build>
         <!-- Plugin Management -->
         <pluginManagement>
@@ -165,6 +188,70 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>${version-maven-dependency-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>unpack-wildfly</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>unpack</goal>
+                            </goals>
+                            <configuration>
+                                <artifactItems>
+                                    <artifactItem>
+                                        <groupId>org.wildfly</groupId>
+                                        <artifactId>wildfly-dist</artifactId>
+                                        <version>${version.wildfly}</version>
+                                        <type>tar.gz</type>
+                                        <outputDirectory>${project.build.directory}</outputDirectory>
+                                        <overWrite>false</overWrite>
+                                    </artifactItem>
+                                </artifactItems>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>unpack-wildfly-patch</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>unpack</goal>
+                            </goals>
+                            <configuration>
+                                <artifactItems>
+                                    <artifactItem>
+                                        <groupId>org.wildfly.camel</groupId>
+                                        <artifactId>wildfly-camel-patch</artifactId>
+                                        <version>${version.wildfly.camel}</version>
+                                        <type>tar.gz</type>
+                                        <outputDirectory>${jboss.home}</outputDirectory>
+                                        <overWrite>false</overWrite>
+                                    </artifactItem>
+                                </artifactItems>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${version-maven-failsafe-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <goals>
+                                <goal>integration-test</goal>
+                            </goals>
+                            <configuration>
+                                <systemPropertyVariables>
+                                    <jboss.home>${jboss.home}</jboss.home>
+                                </systemPropertyVariables>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>verify</id>
+                            <goals>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -192,11 +279,6 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${version-exec-maven-plugin}</version>
-                </plugin>
-                <plugin>
                     <groupId>org.wildfly.plugins</groupId>
                     <artifactId>wildfly-maven-plugin</artifactId>
                     <version>${version-wildfly-maven-plugin}</version>
@@ -208,16 +290,6 @@
         </pluginManagement>
     </build>
         
-    <!-- Dependencies -->
-    <dependencies>
-        <dependency>
-            <groupId>org.wildfly.camel</groupId>
-            <artifactId>wildfly-camel-subsystem-core</artifactId>
-            <version>${version.wildfly.camel}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-    
     <!-- Repositories -->
     <repositories>
        <repository>
@@ -240,11 +312,11 @@
         <module>camel-cdi</module>
         <module>camel-cxf-jaxrs</module>
         <module>camel-cxf-jaxws</module>
-        <module>camel-mail</module>
         <module>camel-jms</module>
+        <module>camel-jms-tx</module>
         <module>camel-jpa</module>
-        <module>camel-transacted-jms</module>
-        <module>itests</module>
+        <module>camel-mail</module>
     </modules>
+
 
 </project>
